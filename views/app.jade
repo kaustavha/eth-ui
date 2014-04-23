@@ -1,9 +1,6 @@
 head
-    script(src="angular.min.js")
-    script(src="sha3.js")
-    script(src="bitcoinjs-min.js")
-    script(src="app.js")
-    link(rel="stylesheet",type="text/css",href="bootstrap.min.css")
+    // bower:css 
+    // endbower
     link(rel="stylesheet",type="text/css",href="main.css")
 body(ng-app="tryethereum"): div(ng-controller="TryEthereumCtrl")
     table(cellpadding="20px")
@@ -89,3 +86,8 @@ body(ng-app="tryethereum"): div(ng-controller="TryEthereumCtrl")
                     tr
                         td
                         td: button.btn(ng-click="sendtx(key, account.nonce, sendvalue, sendto, senddata || '')") Send
+    // bower:js
+    // endbower
+    script(src="sha3.js")
+    script(src="bitcoinjs-min.js")
+    script(src="app.js")
