@@ -1,10 +1,11 @@
- ###
+###
 Cakefile
 Author: kaustavha
 
 This cakefile hould allow writing all dependencies and task runner config in coffee, and resolve dependencies,
- run tasks and get a directory to a workable point with a single command.
+run tasks and get a directory to a workable point with a single command.
 ###
+
 {spawn} = require 'child_process'
 fs = require 'fs'
 
@@ -13,6 +14,8 @@ outDir = './'
 pyethGit = 'https://github.com/kaustavha/pyethereum.git'
 serpentGit = 'https://github.com/ethereum/serpent.git'
 su = {uid: 0}
+
+option '-s', '--skip', 'skip git clones and global installs'
 
 # Convenience function for logging - todo: better err. handling
 log = (msg) ->
@@ -58,7 +61,7 @@ toolsToJS = (cb) ->
                 if cb then cb() else log 'Done, converted tool files and fixed JSON'
 
 getEthereum = (cb) ->
-    s = su.extend {cwd: './pyethereum'}
+    s = {uid: 0, cwd: './pyethereum'}
     run 'rm', ['-rf', './pyethereum'], su, ->
         run 'git', ['clone', pyethGit], ->
             run 'pip', ['install', '-r', 'requirements.txt'], s, ->
@@ -70,7 +73,7 @@ getEthereum = (cb) ->
 getSerpent = (cb) ->
     run 'rm', ['-rf', './serpent'], su, ->
         run 'git', ['clone', serpentGit], ->
-            run 'python', ['setup.py', 'install'], su.extend {cwd: './serpent'}, ->
+            run 'python', ['setup.py', 'install'], {uid: 0, cwd: './serpent'}, ->
                 if cb then cb() else log 'Done, installed serpent'
 
 installNPMDeps = (cb) ->
@@ -79,11 +82,17 @@ installNPMDeps = (cb) ->
             if cb then cb() else log 'Done, installed npm dependencies'
  
 task 'build', 'copy and transpile tool files, i.e gulp, bower & npm package, and run gulp', (options) ->
-    getSerpent ->
-        getEthereum ->
-            toolsToJS ->
-                installNPMDeps ->
-                    run 'npm', ['install'], su, ->
-                        run 'bower', ['install'], su, ->
-                            run 'gulp', ['default'], su, ->
-                                console.log 'Bye :)' 
+    if options.skip
+        run 'npm', ['install'], su, ->
+            run 'bower', ['install'], su, ->
+                run 'gulp', ['default'], su, ->
+                    console.log 'Bye :)'
+    else
+        getSerpent ->
+            getEthereum ->
+                toolsToJS ->
+                    installNPMDeps ->
+                        run 'npm', ['install'], su, ->
+                            run 'bower', ['install'], su, ->
+                                run 'gulp', ['default'], su, ->
+                                    console.log 'Bye :)'
