@@ -1,30 +1,29 @@
 tryethereum
 ===========
 
-Try Ethereum with an online interface
+Try Ethereum with an online interface  
 
 ### Installation:  
-You need pip, nodejs and mongo-db installed, the rest of the dependencies should take care of themselves. 
+You need pip, nodejs and mongo-db installed, the rest of the dependencies should take care of themselves.  
 [http://nodejs.org/](http://nodejs.org/)  
 [http://docs.mongodb.org/manual/installation/](http://docs.mongodb.org/manual/installation/)  
 [http://www.pip-installer.org/en/latest/](http://www.pip-installer.org/en/latest/)  
 Also install python 2.7.5+ if you don't have it.  
-Quickstart for *ubuntu systems:  
-Note: do a "sudo su" before running the following  
+Quickstart for *ubuntu systems:   
 ```
-apt-get install python-pip nodejs
-echo 'deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen' | tee /etc/apt/sources.list.d/mongodb.list
-apt-get update
-apt-get install mongodb-org=2.6.0 mongodb-org-server=2.6.0 mongodb-org-shell=2.6.0 mongodb-org-mongos=2.6.0 mongodb-org-tools=2.6.0
-sudo service mongod start
+sudo apt-get install python-pip nodejs  
+echo 'deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen' | sudo tee /etc/apt/sources.list.d/mongodb.list  
+sudo apt-get update  
+sudo apt-get install mongodb-org=2.6.0 mongodb-org-server=2.6.0 mongodb-org-shell=2.6.0 mongodb-org-mongos=2.6.0 mongodb-org-tools=2.6.0  
+sudo service mongod start  
 ```
-Look at the Cakefile first, it installs a few things.  
-Remove anything you don't need or want upgraded to save time.  
 
-Then run:  
+Then get out of su and run:  
 ```
-cake build
+sudo cake build  
 ```
+
+You can also run "sudo cake -s build" to skip git cloning pyethereum and serpent and global npm installs.  
 
 Note:  
 If you get an error from the server related to pyethtool command not found  
