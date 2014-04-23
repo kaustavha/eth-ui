@@ -84,8 +84,8 @@ installNPMDeps = (cb) ->
 task 'build', 'copy and transpile tool files, i.e gulp, bower & npm package, and run gulp', (options) ->
     if options.skip
         run 'npm', ['install'], su, ->
-            run 'bower', ['install'], su, ->
-                run 'gulp', ['default'], su, ->
+            run 'bower', ['install'], {uid: 1000}, ->
+                run 'node', ['server.js'], ->
                     console.log 'Bye :)'
     else
         getSerpent ->
@@ -93,6 +93,6 @@ task 'build', 'copy and transpile tool files, i.e gulp, bower & npm package, and
                 toolsToJS ->
                     installNPMDeps ->
                         run 'npm', ['install'], su, ->
-                            run 'bower', ['install'], su, ->
-                                run 'gulp', ['default'], su, ->
+                            run 'bower', ['install'], {uid: 1000}, ->
+                                run 'node', ['server.js'], ->
                                     console.log 'Bye :)'
