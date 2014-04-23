@@ -20,7 +20,7 @@
     "mongodb": "*"
     "bitcoinjs-lib": "https://github.com/bitfloor/bitcoinjs-lib/tarball/master"
 "keywords": '["bitcoin", "crypto", "finance"]'
-    "repository":
+    "repository" :
          "type": "git"
          "url": "https://github.com/kaustavha/tryethereum.git"
     "engines": { "node": "*" }
