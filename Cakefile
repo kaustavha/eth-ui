@@ -13,7 +13,7 @@ inDir = './tools'
 outDir = './'
 pyethGit = 'https://github.com/kaustavha/pyethereum.git'
 serpentGit = 'https://github.com/ethereum/serpent.git'
-su = {uid: 0}
+su = {uid: 0} # uid 0 -> root, uid 1000 -> user
 
 option '-s', '--skip', 'skip git clones and global installs'
 
@@ -49,7 +49,7 @@ fixPkg = (dir, name, cb) ->
                 data = data.substr pos + 2 #extract desired string, pos + 2 is done to remove /n and (
                 data = data.substr 0, data.length - 3 # remove ); at end
                 fs.writeFile file, data, (err) ->
-                    log err if err           
+                    log err if err
                     cb() if cb
             else
                 log 'Unexpected end or beginning of file' + file
@@ -76,11 +76,11 @@ getSerpent = (cb) ->
             run 'python', ['setup.py', 'install'], {uid: 0, cwd: './serpent'}, ->
                 if cb then cb() else log 'Done, installed serpent'
 
-installNPMDeps = (cb) ->
-    run 'npm', ['install', '-g', 'bower'], su, ->
-        run 'npm', ['install', '-g', 'coffescript'], su, ->
+installDeps = (cb) ->
+    run 'apt-get', ['install', 'python-pip', 'git'], su, ->
+        run 'npm', ['install', '-g', 'bower'], su, ->
             if cb then cb() else log 'Done, installed npm dependencies'
- 
+
 task 'build', 'copy and transpile tool files, i.e gulp, bower & npm package, and run gulp', (options) ->
     if options.skip
         run 'npm', ['install'], su, ->
@@ -88,10 +88,10 @@ task 'build', 'copy and transpile tool files, i.e gulp, bower & npm package, and
                 run 'node', ['server.js'], ->
                     console.log 'Bye :)'
     else
-        getSerpent ->
-            getEthereum ->
-                toolsToJS ->
-                    installNPMDeps ->
+        installDeps ->
+            getSerpent ->
+                getEthereum ->
+                    toolsToJS ->
                         run 'npm', ['install'], su, ->
                             run 'bower', ['install'], {uid: 1000}, ->
                                 run 'node', ['server.js'], ->
