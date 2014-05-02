@@ -24,12 +24,10 @@ var mkrespcb = function(res,code,success) {
 var app = express();
 
 app.configure(function(){
-    app.set('views',__dirname + '/views');
-    app.set('view engine', 'jade'); app.set('view options', { layout: false });
     app.use(express.bodyParser());
     app.use(express.methodOverride());
     app.use(app.router);
-    app.use(express.static(__dirname + '/public'));
+    app.use(express.static(__dirname));
 });
 
 var block = null;
@@ -158,10 +156,6 @@ app.post('/serpent/:command',function(req,res) {
             res.json(r.trim())
         }))
     }))
-});
-
-app.get('/',function(req,res) {
-    res.render('app.jade',{});
 });
 
 app.listen(3000);
