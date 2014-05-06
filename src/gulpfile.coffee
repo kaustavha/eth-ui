@@ -18,12 +18,6 @@ gulp.task 'index', ->
             .pipe gulp.dest dest
     return
 
-gulp.task 'wire', ->
-    gulp.src './build/index.html'
-        .pipe stream()
-        .pipe gulp.dest dest
-    return
-
 gulp.task 'templates', ->
     gulp.src src + 'jade'
         .pipe jade()
@@ -43,6 +37,12 @@ gulp.task 'styles', ->
         .pipe gulp.dest dest
     return
 
+gulp.task 'wire', ['index', 'templates', 'styles', 'scripts'], ->
+    gulp.src './build/index.html'
+        .pipe stream()
+        .pipe gulp.dest dest
+    return
+
 gulp.task 'server', ->
     console.log 'Starting express server on localhost 3000'
     nodemon {script: 'server.js', watch: 'build'}
@@ -53,5 +53,5 @@ gulp.task 'watch', ->
     gulp.watch src + '*', ['build']
     return
 
-gulp.task 'build', ['index', 'templates', 'styles', 'scripts', 'wire', 'server']
+gulp.task 'build', ['wire', 'server']
 gulp.task 'default', ['build', 'watch']
