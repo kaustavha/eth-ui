@@ -1,7 +1,7 @@
 {spawn, fork} = require 'child_process'
 fs = require 'fs'
 
-inDir = './src' # directory containing gulp, npm and bower coffee files
+inDir = './src/' # directory containing gulp, npm and bower coffee files
 outDir = './'
 pyethGit = 'https://github.com/kaustavha/pyethereum.git'
 serpentGit = 'https://github.com/ethereum/serpent.git'
@@ -55,20 +55,22 @@ toolsToJS = (cb) ->
     run 'coffee', ['-b', '-o', outDir, '-c', inDir], ->
         fixPkg outDir, 'bower', ->
             fixPkg outDir, 'package', ->
-                if cb then cb() else log 'Converted tool files and fixed JSON'
+                log 'Converted tool files and fixed JSON'
+                if cb then cb()
 
 installDeps = (cb) ->
     run 'apt-get', ['install', 'python-pip', 'git'], su, ->
         run 'npm', ['install', '-g', 'bower'], su, ->
             run 'npm', ['install'], su, ->
                 run 'bower', ['install'], {uid: 1000}, ->
-            if cb then cb() else log 'Installed dependencies'
+                    log 'Installed dependencies'
+                    if cb then cb()
 
 installJSON = (cb) ->
     run 'npm', ['install'], su, ->
         run 'bower', ['install'], {uid: 1000}, ->
-            if cb then cb() else log 'Installed npm dependencies'
-
+            log 'Installed npm dependencies'
+            if cb then cb()
 
 getEthereum = (cb) ->
     s = {uid: 0, cwd: './pyethereum'}
@@ -78,27 +80,31 @@ getEthereum = (cb) ->
                 run 'wget', ['http://downloads.buildout.org/2/bootstrap.py'], s, ->
                     run 'python', ['bootstrap.py', '-v', '2.1.1'], s, ->
                         run './bin/buildout', [], s, ->
-                            if cb then cb() else log 'Installed pyethereum'
+                            log 'Installed pyethereum'
+                            if cb then cb()
 
 getSerpent = (cb) ->
     run 'rm', ['-rf', './serpent'], su, ->
         run 'git', ['clone', serpentGit], ->
             run 'python', ['setup.py', 'install'], {uid: 0, cwd: './serpent'}, ->
-                if cb then cb() else log 'Installed serpent'
+                log 'Installed serpent'
+                if cb then cb()
 
 start = (cb) ->
+    log 'Starting Mongod'
     run 'mongod', [], su, -> log 'Exiting mongod'
-    log 'Starting a server on localhost:3000'
+    log 'Running gulp'
     run 'gulp', ['build'], ->
-        if cb then cb() else log 'Done, started mongoDB and server'
+        log 'Done, started mongoDB and server'
+        if cb then cb()
 
 task 'build', 'copy and transpile tool files, i.e gulp, bower & npm package, and run gulp', (options) ->
     if options.skip
-        start()
-    else if options.tools
         toolsToJS ->
-            installJSON ->
-                start()
+            start()
+    else if options.tools        
+        installJSON ->
+            start()
     else
         toolsToJS ->
             installDeps ->

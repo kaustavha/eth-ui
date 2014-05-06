@@ -4,3 +4,4 @@
 "dependencies":
     "angular": "~1.2"
     "angular-route": "~1.2"
+    "foundation": "*"

@@ -22,14 +22,10 @@ var mkrespcb = function(res,code,success) {
 }
 
 var app = express();
-
-app.configure(function(){
-    app.use(express.bodyParser());
-    app.use(express.methodOverride());
-    app.use(app.router);
-    app.use(express.static(__dirname));
-});
-
+app.use('/bower_components', express.static('bower_components'));
+app.use('/lib', express.static('lib'));
+app.use('/', express.static('build'));
+app.use('/build/views', express.static('build/views'));
 var block = null;
 
 // Prevent multiple pyethtool processes from locking each other up, by queuing them
@@ -159,6 +155,3 @@ app.post('/serpent/:command',function(req,res) {
 });
 
 app.listen(3000);
-
-return app;
-
