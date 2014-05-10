@@ -29,9 +29,22 @@ sudo cake build
 You can also run "sudo cake -s build" to skip git cloning pyethereum and serpent and installing bower, git and pip
 
 Note:  
-If you get an error from the server related to pyethtool command not found  
-Include the files in pyethereum/bin in your path or copy them to /usr/local/bin on ubuntu based OSs 
+- If you get an error from the server related to pyethtool command not found  
+Include the files in pyethereum/bin in your path or copy them to /usr/local/bin on ubuntu based OSs  
 
+- Sometimes mongo might get derpy. 
+```
+sudo pkill -9 mongodb
+sudo mongod --repair
+```
+Now you can run things from the cakefile again.
+
+- Express might not close or release port 3000, you'll get a Error: listen EADDRINUSE
+```
+sudo fuser -k 3000/tcp
+```
+
+That should fix it.
 ## TODO
-- Plugin wiredep and gulpfile
 - Hooks for c++ implementation install
+- UI
