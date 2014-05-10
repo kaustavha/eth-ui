@@ -22,10 +22,17 @@ var mkrespcb = function(res,code,success) {
 }
 
 var app = express();
-app.use('/bower_components', express.static('bower_components'));
-app.use('/lib', express.static('lib'));
-app.use('/', express.static('build'));
-app.use('/build/views', express.static('build/views'));
+
+app.configure(function(){
+    app.use(express.bodyParser());
+    app.use(express.methodOverride());
+    app.use(app.router);
+    app.use('/bower_components', express.static('bower_components'));
+    app.use('/lib', express.static('lib'));
+    app.use('/', express.static('build'));
+    app.use('/build/views', express.static('build/views'));
+});
+
 var block = null;
 
 // Prevent multiple pyethtool processes from locking each other up, by queuing them
@@ -108,12 +115,10 @@ app.post('/applytx',function(req,res) {
     cmd = 'pyethtool applytx "'+block+'" "'+req.param('data')+'"'
     var b = {}
     callProc(cmd, function(r,cb) {
-        r = r.trim()
-        r = ('['+r.substring(1,r.length-1)+']').replace(/'/g,'"')
         r = JSON.parse(r)
-        b.block = r[0]
-        b.response = r[1]
-        saveBlock(r[0],cb)
+        b.block = r.block
+        b.response = r.result
+        saveBlock(r.block,cb)
     }, mkrespcb(res,400,function() {
         res.json(b)
     }))
