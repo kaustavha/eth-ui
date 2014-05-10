@@ -94,7 +94,7 @@ start = (cb) ->
     log 'Starting Mongod'
     run 'mongod', [], su, -> log 'Exiting mongod'
     log 'Running gulp'
-    run 'gulp', ['build'], ->
+    run 'gulp', ['default'], ->
         log 'Done, started mongoDB and server'
         if cb then cb()
 
