@@ -9,18 +9,11 @@ nodemon = require 'gulp-nodemon'
 
 src = './src/{,*/}*.'
 dest = './build/'
-locs = {} # jade-gulp requirement
-
-gulp.task 'index', ->
-    gulp.src './src/index.jade'
-        .pipe jade()
-            .on 'error', log
-            .pipe gulp.dest dest
-    return
 
 gulp.task 'templates', ->
     gulp.src src + 'jade'
         .pipe jade()
+            .on 'error', log
         .pipe gulp.dest dest
     return
 
@@ -37,9 +30,11 @@ gulp.task 'styles', ->
         .pipe gulp.dest dest
     return
 
-gulp.task 'wire', ['index', 'templates', 'styles', 'scripts'], ->
-    gulp.src './build/index.html'
-        .pipe stream()
+gulp.task 'index', ->
+    gulp.src './src/index.jade'
+        .pipe stream min: true
+        .pipe jade()
+            .on 'error', log
         .pipe gulp.dest dest
     return
 
@@ -53,5 +48,6 @@ gulp.task 'watch', ->
     gulp.watch src + '*', ['build']
     return
 
-gulp.task 'build', ['wire', 'server']
+gulp.task
+gulp.task 'build', ['templates', 'styles', 'scripts', 'index', 'server']
 gulp.task 'default', ['build', 'watch']
