@@ -4,11 +4,30 @@ head
     // endbower
     link(rel="stylesheet",type="text/css",href="main.css")
 body(ng-app="tryethereum")
-    div(ng-view)
-        p aaaaaaaaaaaaaaaaaaaaaaaa
+    div(class='off-canvas-wrap' data-offcanvas)
+        div(class='inner-wrap')
+            nav.tab-bar
+                section.left-small
+                a(class='left-off-canvas-toggle menu-icon' href='#')
+                    span
+                section(class='middle tab-bar-section')
+                    h1.title Ethereum
+
+            aside(class='left-off-canvas-menu')
+                ul.off-canvas-list
+                    li
+                        label Menu
+                    li
+                        a(href='#') 2
+
+            section.main-section
+                div(ng-view)
+                    p This should not be visible.
+            a.exit-off-canvas
     // bower:js
     // endbower
-    script(src="lib/sha3.js")
-    script(src="lib/bitcoinjs-min.js")
-    script(src="lib/app.js")
-    script(src="lib/config.js")
+    script(src="../bower_components/foundation/js/foundation/foundation.offcanvas.js")
+    script(src="../lib/sha3.js")
+    script(src="../lib/bitcoinjs-min.js")
+    script(src="../lib/config.js")
+    script(src="../lib/app.js")
