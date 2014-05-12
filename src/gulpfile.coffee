@@ -19,7 +19,7 @@ gulp.task 'templates', ->
 
 gulp.task 'scripts', ->
     gulp.src src + 'coffee'
-        .pipe coffee map: true
+        .pipe coffee map: true, bare: true
             .on 'error', log
         .pipe gulp.dest './lib/'
     return

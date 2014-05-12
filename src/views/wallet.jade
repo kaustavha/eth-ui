@@ -1,0 +1,33 @@
+div(ng-controller='WalletCtrl')
+    .row
+        center
+            h1 My Wallet
+        br
+        div(class='small-2 columns')
+            label(for='seed', class='left inline') Seed(optional)
+        div(class='small-10 columns')    
+            input(type='text', id='seed', placeholder='Optional seed for key generation')
+        table(id='walletInfo')
+            tr
+                td Key
+                td {{ key || 'undefined'}}
+            tr
+                td Wallet address
+                td {{ address || 'undefined'}}
+            tr
+                td Nonce
+                td {{ account.nonce || 0}}
+            tr
+                td Balance
+                td {{ account.balance || 0}}
+            tr
+                td Storage
+                td
+                    table
+                        tr(ng-repeat="k in account.storage")
+                            td k
+                            td account.storage[k]
+        div(class='small-4 columns')
+            button.btn(ng-click="genseed()") Generate new account
+        div(class='small-4 columns offset-1')
+            button.btn(ng-click="alloc(address,1000000000000000000)") Gimme more money
