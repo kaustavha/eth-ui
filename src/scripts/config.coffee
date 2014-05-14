@@ -6,8 +6,7 @@ app.config ($routeProvider, $locationProvider) ->
         .when '/wallet', {templateUrl: '../build/views/wallet.html'}
         .otherwise {templateUrl: '../build/views/all.html'}
     $locationProvider
-        .html5Mode(true)
-        .hashPrefix('!')
+        .html5Mode(false)
     return
 
 dom = angular.element document
