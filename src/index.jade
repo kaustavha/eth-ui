@@ -1,6 +1,5 @@
 doctype html
 head
-    base(href='/')
     // bower:css 
     // endbower
     link(rel="stylesheet",type="text/css",href="main.css")
@@ -19,9 +18,9 @@ body(ng-app="tryethereum")
                     li
                         label Menu
                     li
-                        a(href='/all') All
+                        a(href='/#/all') All
                     li
-                        a(href='/wallet') Wallet
+                        a(href='/#/wallet') Wallet
 
             section.main-section
                 div(ng-view)
@@ -30,9 +29,9 @@ body(ng-app="tryethereum")
     // bower:js
     // endbower
     script(src="../bower_components/foundation/js/foundation/foundation.offcanvas.js")
-    script(src="../lib/sha3.js")    
-    script(src="../lib/bitcoinjs-min.js")
-    script(src="../lib/config.js")
-    script(src="../lib/app.js")
-    script(src='../lib/fetchDataRes.js')
-    script(src='../lib/wallet.js')
+    script(src="/lib/sha3.js")    
+    script(src="/lib/bitcoinjs-min.js")
+    script(src="/lib/config.js")
+    script(src="/lib/app.js")
+    script(src='/lib/fetchDataRes.js')
+    script(src='/lib/wallet.js')

@@ -15,5 +15,6 @@
     "gulp-stylus": "*"
     "gulp-coffee": "*"
     "gulp-flatten": "*"
+    "gulp-rename": "*"
     "gulp-nodemon": "*"
     "gulp-util": "*"

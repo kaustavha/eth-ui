@@ -4,6 +4,7 @@ stylus = require 'gulp-stylus'
 coffee = require 'gulp-coffee'
 flatten = require 'gulp-flatten'
 nodemon = require 'gulp-nodemon'
+rename = require 'gulp-rename'
 {stream} = require 'wiredep'
 {log} = require 'gulp-util'
 
@@ -18,11 +19,17 @@ gulp.task 'templates', ->
     return
 
 gulp.task 'scripts', ->
-    gulp.src src + 'coffee'
+    gulp.src './src/scripts/*.coffee'
         .pipe coffee map: true, bare: true
             .on 'error', log
-        .pipe gulp.dest './lib/'
+        .pipe flatten()
+        .pipe gulp.dest dest + 'lib/'
     return
+
+gulp.task 'nw', ->
+    gulp.src src + 'nw'
+        .pipe rename 'package.json'
+        .pipe gulp.dest dest
 
 gulp.task 'styles', ->
     gulp.src src + 'styl'
@@ -49,5 +56,5 @@ gulp.task 'watch', ->
     return
 
 gulp.task
-gulp.task 'build', ['templates', 'styles', 'scripts', 'index', 'server']
+gulp.task 'build', ['templates', 'styles', 'scripts', 'index', 'server', 'nw']
 gulp.task 'default', ['build', 'watch']
