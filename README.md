@@ -44,7 +44,17 @@ Now you can run things from the cakefile again.
 sudo fuser -k 3000/tcp
 ```
 
-That should fix it.
+That should fix it.  
+Alternatively you could try
+```
+sudo cake fix:bugs
+```
+
+Compilation and launching the node-webkit application is currently a two step process.
+```
+sudo cake -s build
+sudo cake start
+```
 ## TODO
 - Hooks for c++ implementation install
 - UI

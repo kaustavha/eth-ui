@@ -1,5 +1,6 @@
 {spawn, fork} = require 'child_process'
 fs = require 'fs'
+path = require 'path'
 
 option '-s', '--skip', 'skip everything, just run gulp'
 option '-t', '--tools', 'convert the json.coffee files and install the npm and bower deps then start'
@@ -36,12 +37,40 @@ run = (spawnable, args=[], options, cb) ->
         else
             process.exit(res)
 
-
 runQueue = (arr=[]) ->
     func = arr.pop
-    if func.length is 2
-        opts = {}
-    run cmd, args, opts, runQueue()
+    cmd = func[1]
+    args = func[2]
+    if func.length is 2 then opts = {} else opts = func[3]
+    run cmd, args, opts, runQueue(arr)
+
+#lifted from wrench.js
+readdirSyncRecursive = (baseDir) ->
+    baseDir = baseDir.replace(/\/$/, "")
+    readdirSyncRecursive = (baseDir) ->
+        files = []
+        curFiles = undefined
+        nextDirs = undefined
+        isDir = (fname) ->
+            if fs.existsSync(path.join(baseDir, fname))
+                fs.statSync(path.join(baseDir, fname)).isDirectory()
+            else false
+        prependBaseDir = (fname) ->
+          path.join baseDir, fname
+
+        curFiles = fs.readdirSync(baseDir)
+        nextDirs = curFiles.filter(isDir)
+        curFiles = curFiles.map(prependBaseDir)
+        files = files.concat(curFiles)
+        while nextDirs.length
+            files = files.concat readdirSyncRecursive path.join baseDir, nextDirs.shift()
+
+        files
+    # convert absolute paths to relative
+    fileList = readdirSyncRecursive(baseDir).map (val) ->
+        path.relative baseDir, val
+
+    fileList
 
 # Function to fix .json packages converted from .coffee
 fixPkg = (dir, name, cb) ->
@@ -101,13 +130,12 @@ getSerpent = (cb) ->
     run 'python', ['setup.py', 'install'], {uid: 0, cwd: './serpent'}, ->
         log 'Installed serpent'
         if cb then cb()
-
+    
 start = (cb) ->
-    log 'Starting Mongod'
     run 'mongod', [], su, -> log 'Exiting mongod'
-    log 'Running gulp'
+    run 'cp', ['-rf', './lib/*', './build/lib/'], su, -> log 'cp'
     run 'gulp', ['default'], ->
-        log 'Done, started mongoDB and server'
+        log 'Done, started server'
         if cb then cb()
 
 getNodeWebkit = (cb) ->
@@ -121,36 +149,63 @@ getNodeWebkit = (cb) ->
         log 'Node webkit already installed'
         if cb then cb()
 
+startNWgulp = (cb) ->
+    run 'cp', ['-rf', './lib/*', './build/lib/'], su, -> log 'cp'
+    run 'gulp', ['nw'], ->
+        log 'Done, started server'
+        if cb then cb()
+
+
 task 'build', 'copy and transpile tool files, i.e gulp, bower & npm package, and run gulp', (options) ->
         if options.skip
             toolsToJS ->
                 start()
-        if options.tools
+        else if options.tools
             toolsToJS ->
                 installJSON ->
                     start()
-        if options.pyeth
+        else if options.pyeth
             toolsToJS ->
                 installDeps ->
                     getSerpent ->
                         getEthereum ->
-                            start()
+                            installJSON ->
+                                start()
+        else
+            toolsToJS ->
+                installDeps ->
+                    getSerpent ->
+                        getEthereum ->
+                            installJSON ->
+                                start()
 
-task 'start', 'build the node webkit executable', ->
+
+task 'start', 'build the node webkit executable and launch it', ->
     getNodeWebkit ->
-        buildFiles = [appName + '.nw']
-        files = fs.readdirSync './build'
-        for f in files
-            buildFiles.push f
-        run 'zip', buildFiles, {uid: 0, cwd: './build'}, ->
-            run 'mv', ['./build/' + appName + '.nw', '../' + appName + '.nw'], ->
-                run './nw/nw', [appName + '.nw'], ->
+        files = readdirSyncRecursive './build'
+
+        nwi = files.indexOf appName + '.nw'
+        if nwi isnt -1 # Remove any old nw existence ref
+            files.slice nwi, 1
+        files.unshift appName + '.nw'
+
+        data = fs.readFileSync './build/index.html'
+        data = data.toString()
+        while data.indexOf('../') isnt -1
+            data = data.replace '../', './'
+        fs.writeFileSync './build/index.html', data
+        log files
+        run 'zip', files, {uid: 0, cwd: './build'}, ->
+            run 'mv', ['./build/' + appName + '.nw', './' + appName + '.nw'], su, ->
+                run './nw/nw', [appName + '.nw'], su, ->
                     log 'Starting application'
 
+
 task 'fix:bugs', 'fix startup problems due to improper express and mongo shutdowns', ->
-    run 'pkill', ['mongodb'], su, ->
+    log 'fixing bugs'
+    run 'pkill', ['-9', 'mongod'], su, ->
         log 'pk'
-        run 'mongod', ['--repair'], su, ->
-            log 'mongo'
-            run 'fuser', ['-k', '3000/tcp'], su, ->
-                log 'Did my best, try building now'
+    run 'mongod', ['--repair'], su, ->
+        log 'mongo'
+    run 'fuser', ['-k', '3000/tcp'], su, ->
+        log 'Did my best, try building now'

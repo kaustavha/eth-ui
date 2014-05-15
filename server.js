@@ -24,9 +24,9 @@ var mkrespcb = function(res,code,success) {
 var app = express();
 
 app.use('/bower_components', express.static('bower_components'));
-app.use('/lib', express.static('lib'));
 app.use('/', express.static('build'));
-app.use('/build/views', express.static('build/views'));
+app.use('/lib', express.static('build/lib'));
+app.use('/views', express.static('build/views'));
 
 
 var block = null;

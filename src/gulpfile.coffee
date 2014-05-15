@@ -19,11 +19,13 @@ gulp.task 'templates', ->
     return
 
 gulp.task 'scripts', ->
-    gulp.src './src/scripts/*.coffee'
-        .pipe coffee map: true, bare: true
-            .on 'error', log
+    gulp.src src + 'coffee'
+        .pipe coffee 
+            map: true
+            bare: true
+        .on 'error', log
         .pipe flatten()
-        .pipe gulp.dest dest + 'lib/'
+        .pipe gulp.dest './build/lib/'
     return
 
 gulp.task 'nw', ->
@@ -39,7 +41,7 @@ gulp.task 'styles', ->
 
 gulp.task 'index', ->
     gulp.src './src/index.jade'
-        .pipe stream min: true
+        .pipe stream()
         .pipe jade()
             .on 'error', log
         .pipe gulp.dest dest
@@ -55,6 +57,5 @@ gulp.task 'watch', ->
     gulp.watch src + '*', ['build']
     return
 
-gulp.task
-gulp.task 'build', ['templates', 'styles', 'scripts', 'index', 'server', 'nw']
+gulp.task 'build', ['templates', 'styles', 'scripts', 'index', 'nw', 'server']
 gulp.task 'default', ['build', 'watch']

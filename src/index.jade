@@ -18,20 +18,26 @@ body(ng-app="tryethereum")
                     li
                         label Menu
                     li
-                        a(href='/#/all') All
+                        a(href='#/all') All
                     li
-                        a(href='/#/wallet') Wallet
-
+                        a(href='#/wallet') Wallet
+                    li
+                        a(href='#/mining') Mining
             section.main-section
                 div(ng-view)
                     p This should not be visible.
             a.exit-off-canvas
     // bower:js
     // endbower
-    script(src="../bower_components/foundation/js/foundation/foundation.offcanvas.js")
-    script(src="/lib/sha3.js")    
-    script(src="/lib/bitcoinjs-min.js")
-    script(src="/lib/config.js")
-    script(src="/lib/app.js")
-    script(src='/lib/fetchDataRes.js')
-    script(src='/lib/wallet.js')
+    script(src="./bower_components/foundation/js/foundation/foundation.offcanvas.js")
+    script(src="./lib/sha3.js")    
+    script(src="./lib/bitcoinjs-min.js")
+    script(src="./lib/config.js")
+    script(src="./lib/app.js")
+    script(src='./lib/fetchDataRes.js')
+    script(src='./lib/wallet.js')
+
+    script(type='text/ng-template', src='./views/all.html')
+    script(type='text/ng-template', src='./views/wallet.html')
+    script(type='text/ng-template', src='./views/mining.html')
+    script(type='text/ng-template', src='./views/contracts.html')
