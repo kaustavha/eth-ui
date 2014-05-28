@@ -112,7 +112,8 @@ app.post('/applytx',function(req,res) {
     var b = {}
     callProc(cmd, function(r,cb) {
         r = JSON.parse(r)
-        b.block = r.block
+        b.block = r.block\
+        
         b.response = r.result
         saveBlock(r.block,cb)
     }, mkrespcb(res,400,function() {

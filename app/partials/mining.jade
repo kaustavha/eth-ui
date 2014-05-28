@@ -1,0 +1,26 @@
+div(id='minerConfig', class='reveal-modal', ng-controller='miningCtrl', data-reveal)
+    h1 Miner configuration
+    div(class='small-6 columns')
+        label Port Config 
+            input(ng-model='miner.port', type='text', placeholder='Port for incoming connections, defaults to 30303')
+        label Coinbase Address 
+            input(ng-model='miner.addr', type='text', placeholder='Address to payout mining rewards')
+        label Secret Key 
+            input(ng-model='miner.key', type='text', placeholder='Secret key for this node(address defaults to this)')
+        label Ideal peer count 
+            input(ng-model='miner.peers', type='text', placeholder=' Specify ideal peer count (default: 5)')
+    div(class='small-6 columns')
+        label Miner Type (Specify whether this node should be a full node or just a peer server (default: full)):
+            br
+            input(ng-model='miner.type', type='radio', value='full', id='fullNodeMiner')
+            label(for='fullNodeMiner') Full
+            input(ng-model='miner.type', type='radio', value='peerserver', id='peerserver')
+            label(for='peerserver') Peer
+        br
+        label Turn on Mining?
+            br 
+            input(ng-model='miner.state', type='radio', value='on', id='minerOn')
+            label(for='minerOn') On
+            input(ng-model='miner.state', type='radio', value='off', id='minerOff')
+            label(for='minerOff') Off
+    a.close-reveal-modal &#215;

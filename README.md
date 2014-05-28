@@ -58,3 +58,20 @@ sudo cake start
 ## TODO
 - Hooks for c++ implementation install
 - UI
+
+## May 28/2014
+
+Planning on phasing out mongodb and switching to brunch as a build tool. 
+Therefore install brunch  
+```
+npm install brunch
+```
+For devs:  
+
+sudo cake install -> installs pyethereum, serpent, converts JSON files, runs npm install  
+
+sudo cake -s install -> skips getting pyethereum and serpent  
+
+sudo cake start -> builds with brunch, zips and launches the nodewebkit, no live reload, bad for development  
+
+brunch w -> builds out public directory and watches app/ for changes, good for development, launch public/index.html in your browser, still no livereload, but easier to plug in.  

@@ -7,7 +7,7 @@ option '-t', '--tools', 'convert the json.coffee files and install the npm and b
 option '-p', '--pyeth', 'install pyethereum and serpent'
 
 appName = 'eth-ui'
-inDir = './src/' # directory containing gulp, npm and bower coffee files
+inDir = './cson/' # directory containing gulp, npm and bower coffee files
 outDir = './'
 pyethGit = 'https://github.com/ethereum/pyethereum.git'
 serpentGit = 'https://github.com/ethereum/serpent.git'
@@ -116,20 +116,28 @@ installJSON = (cb) ->
 getEthereum = (cb) ->
     s = {uid: 0, cwd: './pyethereum'}
     if not fs.existsSync './pyethereum'
-        run 'git', ['clone', pyethGit]
-    run 'pip', ['install', '-r', 'requirements.txt'], s, ->
-        run 'wget', ['http://downloads.buildout.org/2/bootstrap.py'], s, ->
-            run 'python', ['bootstrap.py', '-v', '2.1.1'], s, ->
-                run './bin/buildout', [], s, ->
-                    log 'Installed pyethereum'
-                    if cb then cb()
+        run 'git', ['clone', pyethGit], ->
+            run 'pip', ['install', '-r', 'requirements.txt'], s, ->
+                run 'wget', ['http://downloads.buildout.org/2/bootstrap.py'], s, ->
+                    run 'python', ['bootstrap.py', '-v', '2.1.1'], s, ->
+                        run './bin/buildout', [], s, ->
+                            log 'Installed pyethereum'
+                            if cb then cb()
+    else 
+        log 'pyethereum already installed'
+        cb() if cb
 
 getSerpent = (cb) ->
     if not fs.existsSync './serpent'
-        run 'git', ['clone', serpentGit]
-    run 'python', ['setup.py', 'install'], {uid: 0, cwd: './serpent'}, ->
-        log 'Installed serpent'
-        if cb then cb()
+        run 'git', ['clone', serpentGit], ->
+            run 'python', ['setup.py', 'install'], {uid: 0, cwd: './serpent'}, ->
+                log 'Installed serpent'
+                if cb then cb()    run 'python', ['setup.py', 'install'], {uid: 0, cwd: './serpent'}, ->
+                log 'Installed serpent'
+                if cb then cb()
+    else
+        log 'Sepent already installed'
+        cb() if cb
     
 start = (cb) ->
     run 'mongod', [], su, -> log 'Exiting mongod'
@@ -155,6 +163,33 @@ startNWgulp = (cb) ->
         log 'Done, started server'
         if cb then cb()
 
+task 'install', 'install pyethereum, serpeant', (options) ->
+    if not options.skip then getSerpent ->
+        getEthereum()
+    toolsToJS ->
+        installJSON()
+
+task 'start', 'build the node webkit executable and launch it', ->
+    getNodeWebkit ->
+        run 'brunch', ['b'], ->
+            run 'cp', ['app/package.json', 'public/package.json'], ->
+                files = readdirSyncRecursive './public'
+
+                nwi = files.indexOf appName + '.nw'
+                if nwi isnt -1 # Remove any old nw existence ref
+                    files.slice nwi, 1
+                files.unshift appName + '.nw'
+
+                # data = fs.readFileSync './build/index.html'
+                # data = data.toString()
+                # while data.indexOf('../') isnt -1
+                #     data = data.replace '../', './'
+                # fs.writeFileSync './build/index.html', data
+                # log files
+                run 'zip', files, {uid: 0, cwd: './public'}, ->
+                    run 'mv', ['./public/' + appName + '.nw', './' + appName + '.nw'], su, ->
+                        run './nw/nw', [appName + '.nw'], su, ->
+                            log 'Starting application'
 
 task 'build', 'copy and transpile tool files, i.e gulp, bower & npm package, and run gulp', (options) ->
         if options.skip
@@ -178,27 +213,6 @@ task 'build', 'copy and transpile tool files, i.e gulp, bower & npm package, and
                         getEthereum ->
                             installJSON ->
                                 start()
-
-
-task 'start', 'build the node webkit executable and launch it', ->
-    getNodeWebkit ->
-        files = readdirSyncRecursive './build'
-
-        nwi = files.indexOf appName + '.nw'
-        if nwi isnt -1 # Remove any old nw existence ref
-            files.slice nwi, 1
-        files.unshift appName + '.nw'
-
-        data = fs.readFileSync './build/index.html'
-        data = data.toString()
-        while data.indexOf('../') isnt -1
-            data = data.replace '../', './'
-        fs.writeFileSync './build/index.html', data
-        log files
-        run 'zip', files, {uid: 0, cwd: './build'}, ->
-            run 'mv', ['./build/' + appName + '.nw', './' + appName + '.nw'], su, ->
-                run './nw/nw', [appName + '.nw'], su, ->
-                    log 'Starting application'
 
 
 task 'fix:bugs', 'fix startup problems due to improper express and mongo shutdowns', ->

@@ -1,0 +1,43 @@
+doctype html
+html(lang='en', ng-app='tryethereum')
+    head
+        // bower:css 
+        // endbower
+        link(rel="stylesheet", type="text/css", href="css/app.css")
+    body
+        div(class='off-canvas-wrap', data-offcanvas)
+            div(class='inner-wrap')
+                nav.tab-bar
+                    section.left-small
+                        a(class='left-off-canvas-toggle menu-icon', href='')
+                            span
+                    section(class='middle tab-bar-section')
+                        h1.title
+                            center Ethereum
+                aside(class='left-off-canvas-menu')
+                    ul.off-canvas-list
+                        li
+                            label Menu
+                        li
+                            a(href='#/all') All
+                        li
+                            a(href='#/wallet') Wallet
+                        li
+                            a(href='', data-reveal-id='minerConfig', data-reveal) Mining
+                            ng-include(src="'/partials/mining.html'" , scope="" , onload="")
+                section.main-section
+                    div(ng-view)
+                        p This should not be visible.
+                a.exit-off-canvas
+        // bower:js
+        // endbower
+        script(src='js/vendor.js')
+        script(src='js/partials.js')
+        script(src='js/app.js')
+        script(src="./bower_components/foundation/js/foundation/foundation.offcanvas.js")
+        script(src="./lib/sha3.js")    
+        script(src="./lib/bitcoinjs-min.js")
+        script(src="./lib/config.js")
+        script(src="./lib/app.js")
+        script(src='./lib/fetchDataRes.js')
+        script(src='./lib/wallet.js')
