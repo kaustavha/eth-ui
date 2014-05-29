@@ -68,10 +68,17 @@ npm install brunch
 ```
 For devs:  
 
+sudo cake [opts] cmd
+
 sudo cake install -> installs pyethereum, serpent, converts JSON files, runs npm install  
 
 sudo cake -s install -> skips getting pyethereum and serpent  
 
-sudo cake start -> builds with brunch, zips and launches the nodewebkit, no live reload, bad for development  
+sudo cake start -> builds with brunch, zips and launches the nodewebkit
+possible options: 
+  -w -> watch for changes
+  -n -> skip building, just launch the app
 
-brunch w -> builds out public directory and watches app/ for changes, good for development, launch public/index.html in your browser, still no livereload, but easier to plug in.  
+brunch w -> builds out public directory and watches app/ for changes, good for development, launch public/index.html in your browser, still no livereload, but easier to plug in. 
+
+sudo cake dev -> compiles app to public, watches public, watches cson folder for changes, installing npm/bower if detected. Good for development, view the app by opening public/index.html in your browser
