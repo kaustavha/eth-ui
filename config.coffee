@@ -13,15 +13,9 @@ exports.config =
       joinTo:
         'js/app.js': /^app/
         'js/vendor.js': /^(bower_components|vendor)/
-
     stylesheets:
       joinTo:
         'css/app.css': /^(app|vendor|bower_components)/
-      order:
-        before: [
-          'app/styles/app.less'
-        ]
-
     templates:
       joinTo:
         'js/dontUseMe' : /^app/ # dirty hack for Jade compiling.
