@@ -23,12 +23,6 @@ log = (msg) ->
 # Function to run spawnable cmdline commands
 # If 3 args are provided the last arg is set to be the callback
 run = (spawnable, args=[], options={}, cb) ->
-    switch spawnable
-        when '' 
-            return cb() if cb
-        when undefined
-            return cb() if cb
-
     switch arguments.length
         when 2
             if typeof args is 'function'
@@ -92,10 +86,18 @@ readdirSyncRecursive = (baseDir) ->
 # @outName string (optional) Output file name
 # @cb function (optional) Callback function to execute on completion
 fromCSON = (name, inDir, outDir, outName, cb) ->
-    #check if name has suffix, remove if it does i.e a.json -> a
-    switch name.substring (name.length - 5), (name.length - 4)
-        when '.'
-            name = name.substring (name.length - 5), 0
+    nameType = typeof name
+    switch nameType
+        when 'object'
+            name.forEach (n) -> fromCSON n, inDir, outDir, outName, cb
+        when 'string'
+            #check if name has suffix, remove if it does i.e a.json -> a
+            if name.substring((name.length - 5), (name.length - 4)) is '.'
+                name = name.substring (name.length - 5), 0
+            else if name is '*'
+                file = readdirSyncRecursive inDir
+                files.forEach (file) -> fromCSON fileName, inDir, ourDir, outName      
+
     switch arguments.length
         when 1
             inDir = ''
@@ -120,12 +122,13 @@ fromCSON = (name, inDir, outDir, outName, cb) ->
         when 4
             if typeof outName is 'function'
                 cb = outName
-                outName = name
+                outName = name      
 
     inFileName = name.toString() + '.cson'
     inFilePath = path.join inDir, inFileName
     outFileName = outName.toString() + '.json'
     outFilePath = path.join outDir, outFileName
+
     process = spawn 'coffee', ['-bc', inFilePath]
     process.on 'exit', (res) ->
         tempFilename = name + '.js'
@@ -251,22 +254,38 @@ task 'install', 'install pyethereum, serpeant, bower & npm deps', (options) ->
         getEthereum()
     installDeps()
 
+brunch = (opts, cb) ->
+    proc = spawn 'brunch', [opts]
+    proc.stdout.on 'close', (d) ->
+        if opts is 'b' then log 'Done building the app'
+        if opts is 'w' then log '<---- Done ---->'
+    proc.stdout.on 'data', (data) ->
+        log data.toString()
+        cb() if cb?
+
+
 task 'dev', 'alias for brunch watch', (options) ->
     fs.watch 'cson', (event, filename) ->
         fromCSON filename, 'cson', ->
             installJSON()
-    bw = spawn 'brunch', ['w'], ->
-    bw.stdout.on 'data', (data) -> 
-        log data.toString()
+    brunch 'w'
+
 
 task 'start', 'build the node webkit executable and launch it', (options) ->
     brunchOpts = if options.watch then ['w'] else ['b']
     
     if options.nobuild
         run './nw/nw', [appName + '.nw', su, -> log 'starting app']
+    if options.watch
+        options.watch = undefined
+        invoke 'start'
+        fs.watch 'cson', (e, fname) ->
+            run 'cake', ['-w', 'start'], su
+        fs.watch 'app', (e, fname) ->
+            run 'cake', ['-w', 'start'], su
     else
         getNodeWebkit ->
-            run 'brunch', brunchOpts, ->
+            brunch brunchOpts, ->
                 fromCSON 'nw', 'cson', 'public', 'package', ->
                     # remove hack file for brunch partials compilation
                     run 'rm', ['./public/js/dontUseMe', './public/js/dontUseMe.map'], su, ->
