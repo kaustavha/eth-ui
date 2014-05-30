@@ -45,6 +45,5 @@ div(ng-controller='')
                 tr
                     td Data (space-separated)
                     td: input(type="text",ng-model="senddata")
-                tr
-                    td
-                    td: button.btn(ng-click="sendtx(key, account.nonce, sendvalue, sendto, senddata || '')") Send
+            center
+                .btn(ng-click="sendtx(key, account.nonce, sendvalue, sendto, senddata || '')") Send
