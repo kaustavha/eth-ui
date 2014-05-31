@@ -20,6 +20,6 @@ div(id='minerConfig', class='reveal-modal', ng-controller='miningCtrl', data-rev
     .row        
         label Turn on Mining?
             br
-            .btn(ng-click="minerOn", ng-show="miner.state == 'off'") On
-            .btn(ng-click="minerOff", ng-show="miner.state == 'on'") Off
+            button.btn(ng-click="minerOn", ng-show="miner.state == 'off'") On
+            button.btn(ng-click="minerOff", ng-show="miner.state == 'on'") Off
     a.close-reveal-modal &#215;
