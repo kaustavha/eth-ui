@@ -1,6 +1,51 @@
-tryethereum
+Ethereum UI
 ===========
 
+This is a work-in-progress user interface for the ethereum cryptocurrency and distrtibuted, trustless, computation platform.
+
+##  Technical Details
+
+The UI uses node-webkit as a base and Zend Foundation as a UI library. The current proposal is to use nodes child_process exec or spawn methods to send CLI input to ethereum clients. Currently there are 5,perhaps 6 cients, each with it's own blockchain, currently incompatible with the others. 
+Clients:  
+- C++
+- Go
+- Python
+- Mutang Compiler
+- Serpent Compiler
+- Ethereum JS library*  
+
+
+## Project Directory Structure
+
+```
+-- app/  -> main files
+-- csom/ -> source files for package manager dependy lists
+-- vendor/ -> external libraries not available on bower or requiring manual selection
+-- .bowerrc -> forces bower to install files in the root directory, prevents brunch fail
+-- Cakefile -> Install/build/compile scripts
+-- config.coffee -> brunch config
+-- db/server.js -> old tryetherem db and server, useful as a template for CLI cmds
+```
+
+## Quick-start
+
+Install things
+```
+cake install
+```
+Compile and launch the node-webkit app
+```
+cake start
+```
+Good for dev, open index.html in public/, this watches the src and doesnt build the nw app
+```
+cake dev
+```
+
+## License
+MIT
+
+# Old Readme info
 Try Ethereum with an online interface  
 
 ## Installation  
